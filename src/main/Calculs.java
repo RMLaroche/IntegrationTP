@@ -1,4 +1,4 @@
-package Integ;
+package main;
 
 public class Calculs
 
