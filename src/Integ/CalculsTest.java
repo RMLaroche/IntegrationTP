@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 
 class CalculsTest {
 	
-	protected int operande1 = 7;
+	protected int operande1 = 6;
 	protected int operande2 = 9;
 	Calculs calculs ;
 
