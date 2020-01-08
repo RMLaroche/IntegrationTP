@@ -1,54 +1,57 @@
-package test;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.CsvFileSource;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 
-import main.Calculs;
 
+import java.util.stream.Stream;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+@RunWith(Parameterized.class)
 class CalculsTest {
-	
-	protected int operande1 = 6;
-	protected int operande2 = 9;
-	Calculs calculs ;
 
-	@BeforeEach
-	void setUp() throws Exception {			//ce qui va	être éxécuté avant
-		
-		this.calculs = new Calculs(operande1,operande2);   //instancier objet calcul
-		//attribuer des valeurs
-	}
+    @ParameterizedTest(name="Multiplication de {0} par {1}, resultat attendu {2}")
+    @MethodSource("multiplierGetSource")
+    public void multiplier(int first, int last, int result) {
+        Calculs calculs = new Calculs(first,last);
+        assertEquals(result,calculs.multiplier());
+    }
 
-	@AfterEach
-	void tearDown() throws Exception {
-	}
+    public static Stream<Arguments> multiplierGetSource() throws Throwable {
+        return Stream.of(
+                Arguments.of(2,2,4),
+                Arguments.of(3,3,9),
+                Arguments.of(3,4,12));
+    }
 
+    @ParameterizedTest(name="Addition de {0} par {1}, resultat attendu {2}")
+    @CsvFileSource(resources = "/additionner_source.csv")
+    public void additionner(int first, int last, int result) {
+        Calculs calculs = new Calculs(first,last);
+        assertEquals(result,calculs.additionner());
+    }
 
-	@Test
-	void testMultiplier() {
-		assertEquals(54, this.calculs.multiplier());
-		//assertequals
-	}
+    @Test
+    public void diviser() {
+        Calculs calculs = new Calculs(4,2);
+        assertEquals(2,calculs.diviser());
 
-	@Test
-	void testAdditionner() {
-		assertEquals(15, this.calculs.additionner());
-	}
+        Calculs finalCalculs = new Calculs(10,0);
+        assertThrows(ArithmeticException.class,() -> finalCalculs.diviser());
+    }
 
-	@Test
-	void testDiviser() {
-		assertEquals((6/9), this.calculs.diviser());
-		Calculs calculs2 = new Calculs(8,0);
-		Assertions.assertThrows(ArithmeticException.class,()->{calculs2.diviser();});
-			
-	}
+    @Test
+    public void soustraire() {
+        Calculs calculs = new Calculs(2,3);
+        assertEquals(-1,calculs.soustraire());
 
-	@Test
-	void testSoustraire() {
-		assertEquals(-3, this.calculs.soustraire());
-	}
-
+        calculs = new Calculs(8,3);
+        assertEquals(5,calculs.soustraire());
+    }
 }
